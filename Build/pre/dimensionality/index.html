@@ -1,0 +1,354 @@
+<!DOCTYPE HTML>
+<!--
+	Magnetic by Pixelarity
+	pixelarity.com | hello@pixelarity.com
+	License: pixelarity.com/license
+-->
+<html>
+	<head>
+		<title>Dimensionality Reduction | The Round Pegs and Square Holes of Big Data</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
+		<link rel='stylesheet' href='../../assets/sass/main.css'>
+		<!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
+		<!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
+	</head>
+	<body id="top">
+
+		<!-- Page Wrapper -->
+			<div id="page-wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<h1><a href="../../">Big Data <span>The Round Pegs and Square Holes</span></a></h1>
+						<nav>
+							<a href="#menu">Menu</a>
+						</nav>
+					</header>
+
+				<!-- Menu -->
+					<nav id="menu">
+						<div class="inner">
+							<h2>Menu</h2>
+							<ul class="links">
+								<li><a href="../../">Home</a></li>
+								<li><a href="../../trees/">Decision Trees</a></li>
+								<li><a href="../../pre/dimensionality/">Dimensionality Reduction</a></li>
+								<li><a href="../../proc/id3/">Building The Tree</a></li>
+								<li><a href="../../post/performance/">Performance</a></li>
+								<li><a href="../../post/forests/">Random Forests</a></li>
+								<li><a href="../../casestudy/">Case Study</a></li>
+								<li><a href="../../post/boosting/">Boosting</a></li>
+							</ul>
+						</div>
+					</nav>
+
+				<!-- Main -->
+					<div id="main">
+
+						<!-- Content -->
+							<section id="content" class="default two">
+								<header class="major">
+									<h2>Dimensionality Reduction</h2>
+									<p>The fundamental problem of dimensionality reduction is how to <br/> discover compact representations of high-dimensional data.</p>
+								</header>
+								<div class="content">
+									<p>
+									Exploratory data analysis and visualisation are of critical importance to many areas of science. The fundamental problem of dimensionality reduction is how to discover compact representations of high-dimensional data <cite>(1)</cite>.
+									</p>
+
+									<p>
+										High-dimensional datasets are defined by their inclusion of a large number of distinct variables; for example, the health status of patients can include more than 100+ measured parameters from blood analysis, immune system status, genetic background, nutrition, alcohol and drug consumption, operations, treatments and diagnosed diseases <cite>(2)</cite>. Each of these parameters is a dimension (or <em>feature</em>) of the dataset, and can be used to identify patterns and trends. This idea implies that a higher dimensional data set is preferable as it would allow us to distinguish between different conditions and find correlations more effectively, however, this is <em>not the case</em>; effectively <em>reducing</em> the number of dimensions that a dataset contains is a key problem in machine learning. Lower dimensional data is desirable due to the effects of the <em>curse of dimensionality</em> <cite>(3)</cite>.
+									</p>
+
+									<hr/>
+
+									<h3>The Curse of Dimensionality</h3>
+									<p>
+										The <em>curse of dimensionality</em> is the problem of detecting structures within data embedded in high dimensional space. When classifying, objects it is necessary to utilise <em>features</em>, descriptions of some characteristic of each object type that can be represented numerically (so that statistical algorithms and data analysis can be applied). An example would be using the colour values of an image of a car to determine whether it was produced by Audi or BMW. Clearly, this feature alone is not adequate to identify the cars’ manufacturer with any reliability. It is possible, therefore, to increase the dimensionality of the problem by adding more features, determining the shape of each car using edge detection and colour gradients perhaps. These additional features, in combination, could all be used by our classifier to identify the make of each car more accurately.
+									</p>
+
+									<p>
+										As mentioned before, it is tempting at this point to increase the dimensionality further, adding more and more features to allow us perfectly classify every make of car using hundreds of different features. It is here that the <em>curse of dimensionality</em> comes into play:
+									</p>
+
+									<blockquote>
+										"For a fixed size of training data, increasing the dimensionality (number of features) past some optimal number causes classifier performance to degrade substantially."
+									</blockquote>
+
+									<p>
+										This conclusion is based on <em>Hughes’ Phenomenon</em> <cite>(4)</cite> and is depicted in Figure 1. The cause of the curse of dimensionality comes down to the decreasing density of a constant number of data points as the number of dimensions increases <cite>(5)</cite>. In a high-dimensional space, most points selected from some finite, random set of N data points inside a similarly finite volume end up being distant from each other, accumulating in the corners of the space <cite>(6)</cite>. 
+									</p>
+
+									<figure class="image figure">
+										<img src="../../images/pre/dimensionality/fig1.png" />
+										<figcaption>
+											<strong>Figure 1: </strong>
+											As the dimensionality increases, the performance of the classifier increases rapidly until an optimum point. Beyond this point, increases in dimensionality without similar growth in the number of training samples detracts from the performance of the classifier <cite>(3)</cite>.
+										</figcaption>
+									</figure>
+
+									<p>
+										Using the car example, assume we wanted to classify Audis and BMWs using a single feature (for example, proportion of pixels that are “red”), that varies between 0 and 1, with training data that covered 10% of this total possible range of feature values. The required training sample size for this would be 10% of the complete population of Audis and BMWs. If we added another feature that varied in the same way (going up to a 2 dimensional feature space) and wanted the same 10% coverage of the possible range of feature values, we would require a sample size of more than 31% of the total population in each dimension (see <strong>Figure 2</strong>).
+									</p>
+
+									<span class="maths">31% of possible Feature<sub>1</sub> values × 31% of possible Feature<sub>2</sub> values = 10% of total range of values</span>
+
+									<figure class="image figure wide">
+										<img src="../../images/pre/dimensionality/fig2.png" />
+										<figcaption>
+											<strong>Figure 2: </strong>
+											As the number of dimensions increases, data becomes more sparse and we require larger and larger training samples to attain the same coverage
+										</figcaption>
+									</figure>
+
+									<p>
+										If the size of the training data did not increase along with the number of dimensions, the data would become more and more sparse as the dimensionality increased <cite>(5)</cite>. This data sparsity leads to a phenomenon known as <a href="../../post/performance/"><em>overfitting</em></a>, in which the classifier begins to learn specific details of the training data which are not relevant to the general concept that is being classified <cite>(3)</cite>. Overfitting results in poor classifier performance when asked to classify any real-world data, which is unlikely to conform to the case-specific details that the classifier has learnt. Put simply, a linearly increasing number of dimensions necessitates an <em>exponentially</em> increasing number of training data points to maintain an equivalent level of classifier performance when exposed to real-world data.
+									</p>
+
+									<p>
+										To summarise, multiple dimensions are hard to think in, impossible to visualise and the number of possible values grows exponentially with each dimension, making completely enumerating all subspaces almost impossible for high dimensions. Additionally, incorporating a large amount of features increases the levels of noise within the data, as well as causing the training data to become more and more sparse, necessitating exponential increases in training sample size for linear increases in dimensionality, all to avoid overfitting <cite>(6)</cite>.
+									</p>
+
+									<p>
+										Reducing the number of dimensions used leads to imperfect classification of the training data, however, classifier performance with real-world data is still greatly superior to high-dimensional datasets due to the lack of overfitting.
+									</p>
+
+									<hr />
+
+									<h3>Locally Linear Embedding</h3>
+									<p>
+										The paper that revolutionised the field of Dimensionality Reduction was titled <em>“Nonlinear Dimensionality Reduction by Locally Linear Embedding”</em> and was produced by Sam Roweis during his tenure at the Gatsby Computational Neuroscience Unit at UCL in collaboration with Lawrence Saul of AT&amp;T’s Research Lab <cite>(1)</cite>. The paper described Locally Linear Embedding (LLE), an unsupervised learning algorithm that “attempts to discover nonlinear structure in high dimensional data by exploiting the local symmetries of linear reconstructions” <cite>(7)</cite>. LLE takes a high dimensional dataset as an input and maps it to a single, global coordinate system of lower dimensionality. The algorithm is adept at generating highly nonlinear embeddings, identifying complex groupings of data with <em>nonlinear</em> relationships in high dimensions and maintaining these groupings whilst mapping data points to a lower dimensional space <cite>(1)</cite>. This is in comparison to Principal Component Analysis, one of the main linear techniques for dimensionality reduction, which simply performs a direct <em>linear</em> mapping of data to a space of lower dimensions, but is inappropriate for use with nonlinear problems.
+									</p>
+
+									<p>
+										LLE initially takes one parameter, <span class="maths">k</span>, and constructs a <span class="maths">k</span>-nearest-neighbours (kNN) graph for each individual point in the dataset. It is important that the <span class="maths">k</span> passed to the algorithm is large enough to produce a <em>connected</em> kNN graph; if the chosen <span class="maths">k</span> is too small, the resulting kNN graph may be formed of unconnected segments, making it unsuitable for use with LLE. Following the construction of the kNN graph, a set of weights is computed for each point, which best linearly reconstruct the point from its <span class="maths">k</span> neighbours (i.e. the best possible descriptions of the point as a linear combination of the <span class="maths">k</span> closest points to it). It then uses an optimisation technique based upon eigenvectors to locate a low-dimensional embedding of each of the points, whilst ensuring that each point can still be described by the same linear combination of its <span class="maths">k</span> neighbours. This is the key to how LLE retains the structure of high-dimensional data in lower dimensions <cite>(7)</cite>.
+									</p>
+
+									<figure class="image figure">
+										<img src="../../images/pre/dimensionality/fig3.png" />
+										<figcaption>
+											<strong>Figure 3: </strong>
+											A mapping of a 3-dimensional embedding to a 2-dimensional space, whilst retaining non-linear structure within the original data using Locally Linear Embedding (LLE). Image from <cite>(8)</cite>
+										</figcaption>
+									</figure>
+
+									<hr/>
+
+									<h3>Problems with LLE</h3>
+									<p>
+										Since its introduction, LLE has become a classic method of nonlinear dimensionality reduction due to its ability to deal with huge amounts of high dimensional data and its innovative approach to locating low-dimensional structures in high dimensions. LLE is also simpler to compute than its competitors (including Isomap, Laplacian eigenmaps, and local tangent space alignment), as well as being able to return useful results on a wider range of datasets <cite>(9)</cite>.  Despite this, LLE is still imperfect; a few examples are the following: <cite>(10)</cite>
+									</p>
+
+									<ul>
+										<li>
+											If a low-density sample is provided to LLE, or the points have not been sampled uniformly, then LLE is unable to locate non-uniform warps and folds.
+										</li>
+
+										<li>
+											Selection of the parameter k (which is used to calculate the k-nearest-neighbors graph in the first step of the algorithm) has a substantial impact on the performance of LLE.
+										</li>
+
+										<li>
+											LLE is extremely sensitive to any form of noise within the data; small amounts of noise relative to the dataset can often lead to failure in producing lower dimension coordinates.
+										</li>
+
+										<li>
+											LLE can encounter <em>ill-conditioned eigenvalue problems</em>
+											<ul>
+												<li>
+													A square matrix is <em>ill-conditioned</em> if it is invertible but can quickly become non-invertible if some of its entries are changed by a small amount
+												</li>
+												<li>
+													Solving linear equation systems with coefficient matrices that are ill-conditioned is difficult, as small variations in the data can result in hugely different answers, for example, take:
+													\[A = \begin{bmatrix}4.5 & 3.1 \\1.6 & 1.1 \end{bmatrix}, 
+													\space
+													b =\begin{bmatrix}19.249 \\ 6.843 \end{bmatrix},
+													\space
+													b_{1} =\begin{bmatrix}19.25 \\ 6.84 \end{bmatrix}\]
+												</li>
+												<li>
+													If we solve <span class="maths">Ax=b</span>, then <span class="maths">x = (3.94, 0.49)</span>, but if we solve <span class="maths">Ax=b<sub>1</sub></span>, then <span class="maths">x = (2.9, 2.0)</span>
+												</li>
+												<li>
+													The minor change from b<sub>1</sub> to b could easily occur as a result of rounding, or floating point errors. As we have seen, these minute changes cause huge shifts in the output and LLE’s vulnerability to these ill-conditioned eigenvalue problems is of concern.
+												</li>
+											</ul>
+										</li>
+										<li>
+											LLE is an <em>unsupervised</em> algorithm and makes the assumption that all of the data resides on one, continuous manifold, which is inherently untrue for classification problems with multiple classes.
+										</li>
+									</ul>
+
+									<hr/>
+
+									<h3>Modifications to LLE</h3>
+									<p>
+										To conquer some of the issues mentioned above, LLE has undergone many extensions from various researchers.
+									</p>
+
+									<h4>
+										ISOLLE: LLE with Geodesic Distance
+									</h4>
+									<p>
+										The only nonlinear step in the LLE algorithm is the selection of a point’s closest neighbours, and this plays a crucial part in the algorithm’s performance. If the points are sampled in a biased way or contaminated by noise, estimated reconstruction weights used by LLE end up poorly reflecting the local geometry of the manifold, which also affects the lower dimensional embedding.
+										One proposed solution to this is altering the distance metric used by LLE. In the original version of the algorithm, the Euclidean distance was used directly, which can result in short circuits –an assignment of neighbours that are actually very distant from the data point itself, as seen in Figure 4. An extension of LLE (known as ISOLLE) utilises the geodesic distance between points (the number of edges in the shortest path that connects them), instead of Euclidean distance. There is evidence to show that utilising ISOLLE can reduce the number of short circuits occurring whilst locating the neighbours of a point <cite>(11)</cite>.
+									</p>
+
+									<figure class="image figure">
+										<img style="min-width: 450px;" src="../../images/pre/dimensionality/fig4.svg" />
+										<figcaption>
+											<strong>Figure 4: </strong>
+											Use of Euclidean distance (left) has resulted in a short circuit, as the two points appear relatively close to each other, despite being on opposite ends of the “horseshoe” formation. Using Geodesic distance (right) eliminates this issue, as the shortest path between the two points is very long.
+										</figcaption>
+									</figure>
+
+									<hr/>
+
+									<h4>
+										Improved LLE through New Distance Computing
+									</h4>
+									<p>
+										Utilising a different method of computing distance between points is also an effective way to reduce the effect that the choice of the K parameter has upon LLE’s dimensionality reduction. In standard LLE, the nearest-neighbour points cover a larger area when the surrounding region is sparse and a smaller area when the surrounding region is dense with points. It is desirable to eliminate the effects of this uneven dispersal of points so that our low dimensional embedding is less influenced by the sample points’ distribution.
+									</p>
+									<p>
+										<em>Improved LLE</em>, uses a new distance formula roughly based upon Euclidean distance <cite>(12)</cite>:
+									</p>
+
+									\[d_{ij} = \frac{\left|x_{i}-x_{j} \right|}{\sqrt{M(i)M(j)}}
+									, \space where \space M(i) = \frac{1}{K}\sqrt{\sum_{l=1}^K \left | x_{i} - x_{l} \right | ^ 2}\]
+
+									<p>
+										The effect of using this modified formula is that the distance between sample points in a dense area becomes larger and the distance between sample points in a sparse area becomes smaller. In essence, the distribution of sample points becomes more proportional to reduce the effects of their original distribution <cite>(12)</cite>. Also, a much larger range of values for K can now be used to produce good results, as seen below in the reduction of a 3-dimensional half-cylinder to 2 dimensions – all images from <cite>(10)</cite>. 
+									</p>
+
+									<figure class="image figure">
+										<img style="min-width: 450px;" src="../../images/pre/dimensionality/fig5.png" />
+										<figcaption>
+											<strong>Figure 5: </strong>
+											3-dimensional half cylinder
+										</figcaption>
+									</figure>
+
+									<figure class="image figure">
+										<img style="min-width: 450px;" src="../../images/pre/dimensionality/fig6.png" />
+										<figcaption>
+											<strong>Figure 6: </strong>
+											3-dimensional half cylinder reduced to 2-dimensional using standard LLE (left) and improved LLE (right), with <strong><span class="maths">K = 4</span></strong>
+										</figcaption>
+									</figure>
+
+									<figure class="image figure">
+										<img style="min-width: 450px;" src="../../images/pre/dimensionality/fig7.png" />
+										<figcaption>
+											<strong>Figure 7: </strong>
+											3-dimensional half cylinder reduced to 2-dimensional using standard LLE (left) and improved LLE (right), with <strong><span class="maths">K = 9</span></strong>
+										</figcaption>
+									</figure>
+
+									<figure class="image figure">
+										<img style="min-width: 450px;" src="../../images/pre/dimensionality/fig8.png" />
+										<figcaption>
+											<strong>Figure 8: </strong>
+											3-dimensional half cylinder reduced to 2-dimensional using standard LLE (left) and improved LLE (right), with <strong><span class="maths">K = 19</span></strong>
+										</figcaption>
+									</figure>
+
+									<p>
+										When k is too small (in the case <span class="maths">K = 4</span>), neither LLE or Improved LLE produce acceptable results. From <span class="maths">K = 9</span> onwards, however, Improved LLE exhibits superior performance; standard LLE does not produce good results until <span class="maths">K = 19</span>, at which point Improved LLE is still performing well (and has been since <span class="maths">K = 9</span>).
+									</p>
+
+									<hr/>
+
+									<p>
+										Data from the UCI handwritten digit database was used to test the performance of the Improved LLE algorithm. In this dataset, each grayscale image depicting a handwritten character is 8 x 8 (64 dimensions), plus an additional dimension for its label, resulting in a dimensionality of 65 per sample. Extensive values of d and K were tested (where d is the reduced number of dimensions and K is the number of nearest neighbours to select). Following the dimensionality reduction, the resulting data was passed through a K-nearest-neighbours algorithm to identify the actual class of a query image. <strong>Table 1</strong> shows the results of this testing, the values in the table represent the error rate (the average percentage of misclassified patterns in the testing set). It is evident from the data below that the average error rate is much lower when using Improved LLE, with the same values for d and K <cite>(10)</cite>.
+									</p>
+
+									<figure class="image figure wide">
+										<img style="min-width: 450px;" src="../../images/pre/dimensionality/tab1.png" />
+										<figcaption>
+											<strong>Table 1: </strong>
+											Results for standard LLE and Improved LLE when tested with the UCI handwritten digit dataset, table from <cite>(10)</cite>
+										</figcaption>
+									</figure>
+									<hr/>
+									<h3>
+										Conclusion
+									</h3>
+									<p>
+										Dimensionality reduction is a crucial part of preprocessing data before it is utilised in machine learning. Reducing the number of dimensions in a way that preserves structure is highly desirable and LLE is adept at accomplishing this task. Nevertheless, the algorithm is susceptible to short circuits, vulnerable to noisy data and sensitive to the value of its sole parameter (k). Many extensions to the algorithm have altered the Euclidean distance formula used by standard LLE; these alterations have been effective at fixing short circuits and parameter sensitivity. Extensions also exist to convert LLE to a <em>supervised</em> algorithm, making it suitable for use with problems with multiple classes and many, potentially discontiguous manifolds.
+									</p>
+
+									<hr/>
+									<footer class="references">
+										<h2>References</h2>
+										<p>
+											1.	Roweis ST, Saul LK. Nonlinear Dimensionality Reduction by Locally Linear Embedding. Science. 2000;290(5500):2323-6.
+										</p>
+										<p>
+											2.	Willhelm J. What are some examples of high-dimensional data? 2014 [Available from: https://www.researchgate.net/post/What_are_some_examples_of_high-dimensional_data.
+										</p>
+										<p>
+											3.	Spruyt V. The Curse of Dimensionality in Classification 2014 [Available from: http://www.visiondummy.com/2014/04/curse-dimensionality-affect-classification/.
+										</p>
+										<p>
+											4.	Hughes G. On the mean accuracy of statistical pattern recognizers. IEEE Transactions on Information Theory. 1968;14(1):55-63.
+										</p>
+										<p>
+											5.	Rojas R. The Curse of Dimensionality. Freie Universität Berlin; 2015 15/02/2015.
+										</p>
+										<p>
+											6.	Alonso MC, Malpica JA, Agirre AMd. Consequences of the Hughes Phenomenon on Some Classification Techniques.  ASPRS 2011 Annual Conferences; 01/05/2011; Milwaukee, Wisconsin2011.
+										</p>
+										<p>
+											7.	Roweis ST, Saul LK. An Introduction to Locally Linear Embedding. 2001.
+										</p>
+										<p>
+											8.	Jake V, Andrew C. Reducing the Dimensionality of Data: Locally Linear Embedding of Sloan Galaxy Spectra. The Astronomical Journal. 2009;138(5):1365.
+										</p>
+										<p>
+											9.	Saul LK, Roweis ST. Think globally, fit locally: unsupervised learning of low dimensional manifolds. The Journal of Machine Learning Research. 2003;4:119-55.
+										</p>
+										<p>
+											10.	Chen J, Liu Y. Locally linear embedding: a survey. Artificial Intelligence Review. 2011;36(1):29-48.
+										</p>
+										<p>
+											11.	Varini C, Degenhard A, Nattkemper TW. ISOLLE: LLE with geodesic distance. Neurocomputing. 2006;69(13–15):1768-71.
+										</p>
+										<p>
+											12.	Wang H, Zheng J, Yao Z, Li L. Improved Locally Linear Embedding Through New Distance Computing. In: Wang J, Yi Z, Zurada JM, Lu B-L, Yin H, editors. Advances in Neural Networks - ISNN 2006: Third International Symposium on Neural Networks, Chengdu, China, May 28 - June 1, 2006, Proceedings, Part I. Berlin, Heidelberg: Springer Berlin Heidelberg; 2006. p. 1326-33.
+										</p>
+									</footer>
+
+								</div>
+							</section>
+
+					</div>
+
+				<!-- Footer -->
+					<section id="footer">
+						<div class="copyright">
+							<p>
+								Copyright &copy; 
+								<script type="text/javascript">
+								  document.write(new Date().getFullYear());
+								</script>
+							 	Z. Amjad, R. Padmanabhan, R. Pritchard and G. Zhelev –
+							 	<a href="../../acknowledgements/">Acknowledgements</a>
+							 </p>
+						</div>
+					</section>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="../../assets/js/jquery.min.js"></script>
+			<script src="../../assets/js/skel.min.js"></script>
+			<script src="../../assets/js/util.js"></script>
+			<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+			<!--[if lte IE 8]><script src="../../assets/js/ie/respond.min.js"></script><![endif]-->
+			<script src="../../assets/js/main.js"></script>
+
+	</body>
+</html>

@@ -1,0 +1,309 @@
+<!DOCTYPE HTML>
+<!--
+	Magnetic by Pixelarity
+	pixelarity.com | hello@pixelarity.com
+	License: pixelarity.com/license
+-->
+<html>
+	<head>
+		<title>The Round Pegs and Square Holes of Big Data | CO140 Topics Project, Imperial College London</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
+		<!-- @old <link rel="stylesheet" href="assets/css/main.css" /> -->
+		<link rel='stylesheet' href='assets/sass/main.css'>
+		<!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
+		<!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
+	</head>
+	<body id="top">
+
+		<!-- Page Wrapper -->
+			<div id="page-wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<h1><a class='current' href="index.html">Big Data <span>The Round Pegs and Square Holes of Big Data</span></a></h1>
+						<nav>
+							<a href="#menu">Menu</a>
+						</nav>
+					</header>
+
+				<!-- Menu -->
+					<nav id="menu">
+						<div class="inner">
+							<h2>Menu</h2>
+							<ul class="links">
+								<li><a href="#">Home</a></li>
+								<li><a href="trees/">Decision Trees</a></li>
+								<li><a href="pre/dimensionality/">Dimensionality Reduction</a></li>
+								<li><a href="proc/id3/">Building The Tree</a></li>
+								<li><a href="post/performance/">Performance</a></li>
+								<li><a href="post/forests/">Random Forests</a></li>
+								<li><a href="casestudy/">Case Study</a></li>
+								<li><a href="post/boosting/">Boosting</a></li>
+							</ul>
+						</div>
+					</nav>
+
+				<!-- Main -->
+					<div id="main">
+
+						<!-- Banner -->
+							<section id="banner">
+								<header>
+									<h2>The Round Pegs and Square Holes of Big Data</h2>
+									<p>CO140 Topics: Project</p>
+								</header>
+							</section>
+
+						<!-- One -->
+							<section id="one" class="features one">
+								<header class="major">
+									<h2>An Introduction to Decision Trees</h2>
+									<p>Decision Trees are a machine learning technique which exhibit excellent classification
+ 									   performance. Unfortunately, they are not without their fair share of shortcomings.</p>
+ 									   <ul class="actions">
+ 									   	<li><a data-scroll href="#two" class="button">1: Preprocessing  <span class="icon inButton fa-angle-down"></span></a></li>
+ 									   	<li><a data-scroll href="#three" class="button">2: Building The Tree  <span class="icon inButton fa-angle-down"></span></a></li>
+ 									   	<li><a data-scroll href="#four" class="button">3: Post Processing  <span class="icon inButton fa-angle-down"></span></a></li>
+ 									   </ul>
+								</header>
+								<div class="content">
+									<section class="feature">
+										<span class="icon major fa-tree"></span>
+										<h3>What are decision trees?</h3>
+										<p>A decision tree is a <strong>graph</strong> that allows you to reach an outcome (a decision) by <strong>repeatedly evaluating conditions</strong>. Once a condition has been evaluated, you follow the corresponding branch to the next node. This node may either be <strong>another condition</strong> to be evaluated or it may be a <strong>leaf</strong> containing a <strong>decision</strong>.</p>
+									</section>
+									<section class="feature">
+										<span class="icon major fa-desktop"></span>
+										<h3>What are Decision Trees used for?</h3>
+										<p>In the same way that humans use their past experiences to influence their future decisions, a decision tree uses training data to make a decision on what the outcome should be. For example, a simple one level tree may ask if a user has liked Facebook pages about cycling to decide whether or not to show them an advert for a new bicycle.</p>
+									</section>
+									<section class="readMoreLink">
+										<a class="button big" href="trees/">Read More on Decision Trees <span class="icon fa-angle-right"></span></a>
+									</section>
+									<!--
+									<section class="feature">
+										<span class="icon major fa-newspaper-o"></span>
+										<h3>Sit lorem aliquam</h3>
+										<p>Praesent egestas quam at lorem imperdiet lobortis. Mauris condimentum et euismod ipsum, at ullamcorper libero dolor auctor sit amet. Proin vulputate amet sem ut tempus. Donec quis ante viverra, suscipit euismod habitant lorem ipsum dolor.</p>
+									</section>
+									-->
+								</div>
+							</section>
+
+							<section id="two" class="features two">
+								<header class="major">
+									<h2>Step 1: Preprocessing The Data</h2>
+									<p>We must sculpt our dataset to make it suitable for the construction of a tree. <br> One of the most common ways of preprocessing data is <strong>dimensionality reduction</strong>.</p>
+									<a class="button big" href="pre/dimensionality/">Dimensionality Reduction <span class="icon fa-angle-right"></span></a>
+								</header>
+								<div class="content">
+									<section class="feature">
+										<span class="icon major fa-bar-chart"></span>
+										<h3>What is high-dimensional data?</h3>
+										<p>High-dimensional data sets are those that are defined by a large number of distinct variables. For example, the current health status of a patient can contain over <strong>100+ different parameters</strong>, including immune system status, genetic background, nutrition and so on. It is essential that we focus <em>only</em> on the parameters that are strictly necessary to solve the problem we are tackling, therefore it is necessary to <em>eliminate</em> some of these parameters whilst <strong>retaining relationships</strong> within the data.</p>
+									</section>
+									<section class="feature">
+										<span class="icon major fa-sort-numeric-desc"></span>
+										<h3>How can we reduce dimensionality?</h3>
+										<p>One of the foremost algorithms for dimensionality reduction was put forward in the paper <em>Nonlinear Dimensionality Reduction by Locally Linear Embedding</em> <cite>(Roweis and Saul, 2000)</cite>. <strong>Locally Linear Embedding</strong> (LLE) takes a high-dimensional dataset as an input and maps it to a single, global coordinate system of <strong>lower dimensionality</strong>. It is particularly adept at identifying complex <em>non-linear</em> groupings of data in high dimensions and <strong>maintaining these groupings</strong> whilst mapping data points to a lower dimensional space.</p>
+									</section>
+									<!--
+									<section class="feature">
+										<span class="icon major fa-newspaper-o"></span>
+										<h3>Sit lorem aliquam</h3>
+										<p>Praesent egestas quam at lorem imperdiet lobortis. Mauris condimentum et euismod ipsum, at ullamcorper libero dolor auctor sit amet. Proin vulputate amet sem ut tempus. Donec quis ante viverra, suscipit euismod habitant lorem ipsum dolor.</p>
+									</section>
+									-->
+								</div>
+							</section>
+
+							<section id="three" class="features three">
+								<header class="major">
+									<h2>Step 2: Building The Tree</h2>
+									<p>After our dataset has been prepared, we must now convert it into a decision tree using the <strong>ID3 algorithm</strong>, which takes the data and does ABC before doing XYZ.</p>
+									<a class="button big" href="proc/id3/">Building Decision Trees <span class="icon fa-angle-right"></span></a>
+								</header>
+								<div class="content">
+									<section class="feature">
+										<span class="icon major fa-exclamation-circle"></span>
+										<h3>Issues with building trees</h3>
+										<p>One of the main issues with decision trees is <em>overfitting</em>. This is when the decision tree has been built to <strong>exactly</strong> fit the training data. As such, when the tree is exposed to some new, <em>real-world</em> data, it gives poor outputs.</p>
+									</section>
+									<section class="feature">
+										<span class="icon major fa-cog"></span>
+										<h3>The ID3 tree-building algorithm</h3>
+										<p>The ID3 algorithm was first proposed by Ross Quinlan in 1986. Despite its age, and being improved upon by C4.5 and C5.0, it remains in common use today, as the underlying concept is simple and easy to implement. <!--With a perfect data set, you would get perfect results from a decision tree built using ID3. However, data sets in the real world are never perfect and will contain many outliers, as well as missing or superfluous variables. The performance of ID3 is therefore heavily linked to the quality of its training data – <a href="dimensionality/">dimensionality reduction</a> can be used to improve this.--></p>
+									</section>
+									<!--
+									<section class="feature">
+										<span class="icon major fa-newspaper-o"></span>
+										<h3>Sit lorem aliquam</h3>
+										<p>Praesent egestas quam at lorem imperdiet lobortis. Mauris condimentum et euismod ipsum, at ullamcorper libero dolor auctor sit amet. Proin vulputate amet sem ut tempus. Donec quis ante viverra, suscipit euismod habitant lorem ipsum dolor.</p>
+									</section>
+									-->
+								</div>
+							</section>
+
+							<section id="four" class="features four">
+								<header class="major">
+									<h2>Step 3: Postprocessing</h2>
+									<p>
+										This step involves <strong>analysis</strong> of how our tree performs in order to increase effectiveness by <strong>adjusting the model</strong>. To do this we will consider <strong>common weaknesses</strong> with decision trees.<!--, as well as the quality and quantity of the data that we are working with.-->
+									</p>
+								</header>
+								<div class="content triple">
+									<section class="feature">
+										<span class="icon major fa-exclamation-circle"></span>
+										<a href="post/performance/">
+											<h3>
+												Measuring Performance
+											</h3>
+										</a>
+										<p>In order to tweak our model to increase performance, we need to know <strong>how it performs</strong> in the first place. Here we look at common issues that are often exacerbated by <strong>poor implementation</strong> so that we know where to start when fixing them, as well as <strong>best practices</strong> for testing the <strong>effectiveness</strong> of our model.</p>
+										<footer class="readMoreLinkMobile">
+											<a class="button" href="post/performance/">Measuring Performance <span class="icon fa-angle-right"></span></a>
+										</footer>
+									</section>
+									<section class="feature">
+										<span class="icon major fa-leaf"></span>
+										<a href="post/forests/">
+											<h3>
+												Random Forests
+												<span class="icon fa-angle-right"></span>
+											</h3>
+										</a>
+										<p>This extension to decision trees attempts to combat <strong>overfitting</strong> by <strong>reducing variance</strong>. This is particularly useful when we are building trees from very large, but <strong>‘dirty’ or noisy datasets</strong> (those with many outliers). These kind of datasets are common in big data, where the <strong>masses of data</strong> being collected make it <strong>near impossible to clean</strong> at a preprocessing level.</p>
+										<footer class="readMoreLinkMobile">
+											<a class="button" href="post/forests/">Random Forests <span class="icon fa-angle-right"></span></a>
+										</footer>
+									</section>
+									<section class="feature">
+										<span class="icon major fa-signal"></span>
+										<a href="post/boosting/">
+											<h3>
+												Boosting 
+												<span class="icon fa-angle-right"></span>
+											</h3>
+										</a>
+										<p><strong>Adaboost</strong> and <strong>RobustBoost</strong> are <strong>boosting methods</strong> for machine learning algorithms, which combine <strong>multiple, weak classifiers</strong> and weight them according to their performance. This weighting based upon performance results in a <strong>stronger classifier</strong> when taken as a whole. Use of negative weights even allows <em>bad</em> classifiers to contribute to improving performance</p>.
+										<footer class="readMoreLinkMobile">
+											<a class="button" href="post/boosting/">Boosting <span class="icon fa-angle-right"></span></a>
+										</footer>
+									</section>
+									<footer class="readMoreLink">
+										<div><a class="button" href="post/performance/">Measuring Performance <span class="icon fa-angle-right"></span></a></div>
+										<div><a class="button" href="post/forests/">Random Forests <span class="icon fa-angle-right"></span></a></div>
+										<div><a class="button" href="post/boosting/">Boosting <span class="icon fa-angle-right"></span></a></div>
+									</footer>
+								</div>
+							</section>
+
+							<section class="spotlight">
+								<div class="image" style="background-color: #fff"><img src="images/casestudy/fig2.png" alt="" /></div>
+								<div class="content">
+									<h2>Digits Case Study</h2>
+									<p>If you have had enough theoretical talk, please click below for a real-life case study on decision trees for a handwritten digit dataset, with an implementation written by us in Python.</p>
+									<a class="button" href="casestudy/">Digits Case Study <span class="icon fa-angle-right"></span></a>
+								</div>
+							</section>
+						<!-- Credits -->
+
+							<section id="five" class="cta five">
+								<header>
+									<h2>The Team</h2>
+									<p>Working on this project has been a privilege.<br />
+									We hope you enjoyed our work.</p>
+								</header>
+							</section>
+
+							<section id="six" class="spotlight">
+								<div class="image"><img src="images/pad.jpg" alt="" /></div>
+								<div class="content">
+									<h2>Rohan Padmanabhan</h2>
+									<p>Rohan studies BEng Computing at Imperial College London, where he is an elected representative for first year undergraduates. He was responsible for writing much of the content on decision trees and the ID3 algorithm. In addition to this, Rohan wrote many of the summary paragraphs on this very home page.</p>
+									<ul class="icons">
+										<li><a href="https://www.doc.ic.ac.uk/~rp1615/" class="icon fa-globe"><span class="label">Personal Page</span></a></li>
+										<li><a href="mailto:rp1615@ic.ac.uk" class="icon fa-envelope"><span class="label">Email</span></a></li>
+										<li><a href="https://github.com/RohanPadmanabhan/" class="icon fa-github"><span class="label">Github</span></a></li>
+										<li><a href="https://www.linkedin.com/in/rohan-padmanabhan-9592b613b/" class="icon fa-linkedin"><span class="label">LinkedIn</span></a></li>
+									</ul>
+								</div>
+							</section>
+
+
+							<section id="seven" class="spotlight alt">
+								<div class="image"><img src="images/pritch.jpg" alt="" /></div>
+								<div class="content">
+									<h2>Rohan Pritchard</h2>
+									<p>Rohan studies MEng Computing with Artificial Intelligence at Imperial College London. He was responsible for writing the content on the 'performance measuring', 'random forests' and 'case study' pages, as well as utilising machine learning libraries (such as <a href="http://scikit-learn.org/">SciKit</a> in Python) to develop the <a href="http://github.com/rohanpritchard/bigdataroundpegs">GitHub</a> repo.</p>
+									<ul class="icons">
+										<li><a href="https://www.doc.ic.ac.uk/~rep15/" class="icon fa-globe"><span class="label">Personal Page</span></a></li>
+										<li><a href="mailto:rep15@ic.ac.uk" class="icon fa-envelope"><span class="label">Email</span></a></li>
+										<li><a href="https://www.facebook.com/rohan.pritchard" class="icon fa-facebook"><span class="label">Facebook</span></a></li>
+										<li><a href="https://github.com/rohanpritchard/" class="icon fa-github"><span class="label">Github</span></a></li>
+										<li><a href="https://www.linkedin.com/in/rohan-pritchard-34b129136/" class="icon fa-linkedin"><span class="label">LinkedIn</span></a></li>
+									</ul>
+								</div>
+							</section>
+
+
+							<section id="eight" class="spotlight">
+								<div class="image"><img src="images/zesh.jpg" alt="" /></div>
+								<div class="content">
+									<h2>Zeshan Amjad</h2>
+									<p>Zeshan studies MEng Computing at Imperial College London. He was responsible for writing the content on preprocessing datasets and dimensionality reduction. In addition to this, he designed, structured and coded much of the current website in strong collaboration with other team members.</p>
+									<ul class="icons">
+										<li><a href="https://www.doc.ic.ac.uk/~za816/" class="icon fa-globe"><span class="label">Personal Page</span></a></li>
+										<li><a href="mailto:zeshan@zesh.me" class="icon fa-envelope"><span class="label">Email</span></a></li>
+										<li><a href="https://www.twitter.com/zeshana" class="icon fa-twitter"><span class="label">Facebook</span></a></li>
+										<li><a href="https://github.com/zeshana" class="icon fa-github"><span class="label">Github</span></a></li>
+										<li><a href="https://www.linkedin.com/in/zeshana/" class="icon fa-linkedin"><span class="label">LinkedIn</span></a></li>
+									</ul>
+								</div>
+							</section>
+
+							<section id="nine" class="spotlight alt">
+								<div class="image"><img src="images/george.jpg" alt="" /></div>
+								<div class="content">
+									<h2>George Zhelev</h2>
+									<p>George studies MEng Computing at Imperial College London. He was responsible for writing the section on post-processing boosting of decision trees and other classification algorithms, as well as providing support for other team members during the research phase.</p>
+									<ul class="icons">
+										<li><a href="https://www.doc.ic.ac.uk/~gz1016/" class="icon fa-globe"><span class="label">Personal Page</span></a></li>
+										<li><a href="mailto:gz1016@ic.ac.uk" class="icon fa-envelope"><span class="label">Email</span></a></li>
+										<li><a href="https://www.facebook.com/zhelew.georgi" class="icon fa-facebook"><span class="label">Facebook</span></a></li>
+									</ul>
+								</div>
+							</section>
+
+					</div>
+
+				<!-- Footer -->
+					<section id="footer">
+						<div class="copyright">
+							<p>
+								Copyright &copy; 
+								<script type="text/javascript">
+								  document.write(new Date().getFullYear());
+								</script>
+							 	Z. Amjad, R. Padmanabhan, R. Pritchard and G. Zhelev –
+							 	<a href="acknowledgements/">Acknowledgements</a>
+							 </p>
+						</div>
+					</section>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/skel.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
+			<script src="assets/js/main.js"></script>
+			<script>
+				smoothScroll.init();
+			</script>
+
+	</body>
+</html>

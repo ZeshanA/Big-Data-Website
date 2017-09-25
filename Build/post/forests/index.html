@@ -1,0 +1,235 @@
+<!DOCTYPE HTML>
+<!--
+	Magnetic by Pixelarity
+	pixelarity.com | hello@pixelarity.com
+	License: pixelarity.com/license
+-->
+<html>
+	<head>
+		<title>Random Forests | The Round Pegs and Square Holes of Big Data</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+		<!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
+		<link rel='stylesheet' href='../../assets/sass/main.css'>
+		<!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
+		<!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
+	</head>
+	<body id="top">
+
+		<!-- Page Wrapper -->
+			<div id="page-wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<h1><a href="../../">Big Data <span>The Round Pegs and Square Holes</span></a></h1>
+						<nav>
+							<a href="#menu">Menu</a>
+						</nav>
+					</header>
+
+				<!-- Menu -->
+					<nav id="menu">
+						<div class="inner">
+							<h2>Menu</h2>
+							<ul class="links">
+								<li><a href="../../">Home</a></li>
+								<li><a href="../../trees/">Decision Trees</a></li>
+								<li><a href="../../pre/dimensionality/">Dimensionality Reduction</a></li>
+								<li><a href="../../proc/id3/">Building The Tree</a></li>
+								<li><a href="../../post/performance/">Performance</a></li>
+								<li><a href="../../post/forests/">Random Forests</a></li>
+								<li><a href="../../casestudy/">Case Study</a></li>
+								<li><a href="../../post/boosting/">Boosting</a></li>
+							</ul>
+						</div>
+					</nav>
+
+				<!-- Main -->
+					<div id="main">
+
+						<!-- Content -->
+							<section id="content" class="default four">
+								<header class="major">
+									<h2>Random Forests</h2>
+									<p>Random forests <strong>reduce variance</strong> and thus <strong>decrease overfitting</strong> in a dataset with <strong>noisy data points</strong>.</p>
+									<a href="https://github.com/rohanpritchard/bigdataroundpegs" class="button big">
+										View code on GitHub
+										<span class="icon fa-angle-right"></span>
+									</a>
+								</header>
+								<div class="content">
+									<figure class="image figure">
+										<img src="../../images/post/performance/fig2.png" />
+										<figcaption>
+											<strong>Figure 1: </strong>
+											a graphical illustration of bias and variance in the context of a dartboard
+										</figcaption>
+									</figure>
+
+									<p>
+										Examine the top right circle of <strong>Figure 1</strong>; this is where we currently stand with our decision tree. An overfitting model with high variance. Think of every dot as a different decision tree that has been trained from a different set of training data. Each one misses the mark but if we were able to ask every one of those models for a classification, and then allow them to vote on a result to return back to me, we would end up with a classification that is accurate far more often.
+									</p>
+									<p>
+										Another way to think about this is ‘asking the audience’ in a game of Who Wants To Be A Millionaire. Each individual person has some knowledge, and they’ll be wrong about some things. However by asking the whole audience, we tend to get a much more accurate answer because the individual people who are wrong about a topic tend to be outweighed by the majority who are correct.
+									</p>
+									<p>
+										So consider in <a href="../performance/">figure 1 on the performance page</a> that rather than building a degree 9 polynomial on all the data points, we build many polynomials over random subsets of the data points, and then find the average of all of those polynomials. This fit will give us a much better general fit than the single 9 degree regression that we started with, because a particular outlier will only affect a small proportion of the trees. These examples are the essence of random forests.
+									</p>
+
+									<hr/>
+
+									<h3>The Algorithm <cite>(1)</cite></h3>
+									<p>
+										From a set of labelled data with classifiers, we will split the data into 2 non overlapping sets, one for training and one for testing, we’ll call the training set <span class="maths">T</span>. For <span class="maths">B</span> trees that we want to build, we’ll take <span class="maths">B</span> random subsets of <span class="maths">T</span> (with replacement, thus allowing overlapping subsets), we’ll call them <span class="maths">X<sub>1</sub>, X<sub>2</sub>… X<sub>B</sub></span>. For each subset <span class="maths">X</span>, we will build a separate tree, <span class="maths">ƒ<sub>b</sub></span> using the ID3 algorithm (partitioning data by highest information gain). We can then provide a classification, <span class="maths">G</span>, from an unlabelled piece of data <span class="maths">x’</span> with the following formula (which calculates the average):
+									</p>
+
+									\[G = \frac{1}{B} \space \sum\limits_{b=1}^{B} \space f_{b}(x')\]
+
+									<p>
+										It’s worth noting, that this formula works because all of our targets will be mapped to integers, so once we get a numeric value for <span class="maths">G</span>, we can round it and return back a target value. For instance if we are trying to classify types of fruit, and ‘orange’ maps to 1, if <span class="maths">G</span> returns 1.37, we round this and return ‘orange’.	
+									</p>
+
+									<hr/>
+									
+									<h3>
+										Implementing Decision Tree Tools in Scikit and Random Forest Extensions
+									</h3>
+
+									<h4>Introduction</h4>
+									<p>
+										All implementations will be developed using SciKit for Python, which is a library that contains many different machine learning tools, as well as extensions for these tools. Our implementations will then be tested and contrasted with a standard decision tree, by comparing the accuracy of classifications given a test dataset (which importantly, will contain no overlaps with the training dataset).
+									</p>
+									<p>
+										It’s worth noting at this point that we will be dealing with 2 different types of decision trees; classification trees and regression trees (CART). The difference between these 2 is that classification trees are used to return discrete targets, like a type of fruit or size of shoe. Regression trees on the other hand deal with continuous target data. Both trees are built in very similar ways however <cite>(2)</cite>.
+									</p>
+
+									<h4>
+										A Simple Regression Example (Code on Github) <cite>(3)</cite>
+									</h4>
+									<p>
+										A regression model of 2D data points is a great place to start because we can visually confirm what is occurring. For our simple regression, we’ll generate a bunch of data points that resemble a sine wave (but importantly, with some random error added in). From this set of points, the model will have to fit a regression line to predict a bunch of points that we give it, we’ll split the initial data in half and use one half for the training data, and the other half for the test data. Clearly in reality, this model is not one with much practical significance.
+									</p>
+									<p>
+										We’ll start by generating a dataset of points, splitting them in half (one half for training and the other for testing), and then adding noise to the training half:
+									</p>
+									<pre><code class="python"># Create a random dataset
+import numpy as np
+rng = np.random.RandomState(3)
+X = np.sort(5 * rng.rand(300, 1), axis=0)
+y = np.sin(X).ravel()
+trainingX = X[::2]
+testingX = X[1::2]
+trainingY = y[::2]
+testingY = y[1::2]
+trainingY[::5] += 3 * (0.5 - rng.rand(30))</code></pre>
+
+									<a href="https://github.com/rohanpritchard/bigdataroundpegs" class="button fit special">View Code on Github <span class="icon fa-angle-right"></span></a>
+
+									<p>
+										By using the RandomState feature of the numpy library, we can guarantee the same random noise is added to the data points every time, so that when we run the model first with one decision tree and then with a random forest, both learn from the same data.
+									</p>
+									<p>
+										We can now use Scikit.tree to build a DecisonTreeRegressor <cite>(4)</cite> and fit it to our training data (code on Github). At this point, we might as well take advantage of the fact that we are dealing with 2 dimensional data points by plotting the points, and the predictions that the model gives us for every point, on a graph. This was done using pyplot in the matplotlib library.
+									</p>
+
+									<figure class="image figure">
+										<img src="../../images/post/forests/fig2.png" />
+										<figcaption>
+											<strong>Figure 2: </strong>
+											a graph depicting data points and predictions from a DecisionTreeRegressor 
+										</figcaption>
+									</figure>
+
+									<p>
+										It’s important to note here, that we are restricting the depth of the trees that we are building to 4. Otherwise, we would be building a tree fits entirely to the training data. This is a whole area of discussion in itself, known as <a href="https://en.wikipedia.org/wiki/Pruning_(decision_trees)">pruning</a>.
+									</p>
+									<p>
+										We will now use Scikit.ensemble’s RandomForestRegressor <cite>(5)</cite> to build a series of 20 decision trees from random subsets of the data, as explained above. We’ll use matplotlib to produce a similar graph:
+									</p>
+
+									<figure class="image figure">
+										<img src="../../images/post/forests/fig3.png" />
+										<figcaption>
+											<strong>Figure 2: </strong>
+											a graph depicting data points and predictions from a RandomForestRegressor 
+										</figcaption>
+									</figure>
+
+									<p>
+										We can tell that the random forest regression has better fit the data in 2 different ways. First, it curves better to the data in areas like <span class="maths">x = ~2.5</span>. Second, it is not as affected by individual outliers (consider the point at <span class="maths">x = ~4.6</span>).
+									</p>
+
+									<p>
+										We’ll now test both of these models against our test data with the following code:
+									</p>
+
+									<pre><code class="python"># Test with test data
+testResults = rf.predict(testingX)
+acc = 0
+for i in range(0, len(testResults)):
+   acc += abs(testResults[i] - testingY[i])
+averageError = acc / len(testResults)
+print averageError</code></pre>
+									<a href="https://github.com/rohanpritchard/bigdataroundpegs" class="button fit special">View Code on Github <span class="icon fa-angle-right"></span></a>
+									
+									<p>
+										When we run this test against the results from the single decision tree, we get an average error of 0.14. When we run the same test from our random forest, our error is 0.10, thus our regression tree model better predicts our data in this example.
+									</p>
+
+									<h3>Interactive Demo <cite>(6)</cite></h3>
+									<p>
+										The interactive feature below demonstrates the use of random forests to predict the classification of 2 dimensional datapoints by learning from a dataset. Clicking (or shift clicking) allows you to plot datapoints from either classification on to the graph, and pressing ‘r’ allows you to retrain the model. The red and green areas demonstrate what classification the model would predict if you asked it to predict for a particular datapoint. There are a few things that we can learn from this.
+									</p>
+									<p>
+										First try plotting some points (perhaps into an interesting classification pattern, rather than just randomly) and setting the number of trees to one (so we are no longer using a random forest), now press ‘r’ a few times to retrain the model. Notice how different the model looks every time, this is an ideal representation of variance. Now increase the number of trees to perhaps 50 and try again, notice how much the variance has decreased. Each model now looks pretty similar to the last.
+									</p>
+									<p>
+										Note also that if you plot a few strong outliers in the dataset it is learning from, and then decrease the number of trees back down again, the models become much more swayed by these outliers, clearly demonstrating a model that has highly overfit the data.
+									</p>
+									<iframe src="demo/demo/" class="forestsDemo"></iframe>
+
+									<footer class="references">
+										<h2>References</h2>
+										<p>1. Tin Kam Ho, The Random Subspace Method For Constructing Decision Trees, Bell Laboratories, 1998</p>
+										<p>2. Jason Brownlee, Classification and Regression Trees for Machine Learning, Machine Learning Mastery, April 2016</p>
+										<p>3. SciKit documentation - Ensemble Methods, http://scikit-learn.org/stable/modules/ensemble.html</p>
+										<p>4. SciKit documentation - Decision Tree Regressor, http://scikit-learn.org/stable/modules/tree.html</p>
+										<p>5. SciKit documentation - Random Forest Regressor, http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestRegressor.html</p>
+										<p>6. svmjs Decision Trees in Javascript: demo, http://cs.stanford.edu/people/karpathy/svmjs/demo/demoforest.html</p>
+									</footer>
+									
+								</div>
+							</section>
+
+					</div>
+
+				<!-- Footer -->
+					<section id="footer">
+						<div class="copyright">
+							<p>
+								Copyright &copy; 
+								<script type="text/javascript">
+								  document.write(new Date().getFullYear());
+								</script>
+							 	Z. Amjad, R. Padmanabhan, R. Pritchard and G. Zhelev –
+							 	<a href="../../acknowledgements/">Acknowledgements</a>
+							 </p>
+						</div>
+					</section>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="../../assets/js/jquery.min.js"></script>
+			<script src="../../assets/js/skel.min.js"></script>
+			<script src="../../assets/js/util.js"></script>
+			<!--[if lte IE 8]><script src="../../assets/js/ie/respond.min.js"></script><![endif]-->
+			<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+			<script src="../../assets/js/main.js"></script>
+			<script type="text/javascript">
+				hljs.initHighlightingOnLoad();
+			</script>
+
+	</body>
+</html>

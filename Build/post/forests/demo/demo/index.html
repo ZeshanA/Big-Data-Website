@@ -1,0 +1,345 @@
+<html>
+
+<head>
+  <title>svmjs Decision Trees in Javascript: demo</title>
+  <link type="text/css" href="./jqueryui/css/ui-lightness/jquery-ui-1.8.21.custom.css" rel="Stylesheet" />
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,700" rel="stylesheet" />
+  <script type="text/javascript" src="./jqueryui/js/jquery-1.7.2.min.js"></script>
+  <script type="text/javascript" src="./jqueryui/js/jquery-ui-1.8.21.custom.min.js"></script>
+  <script src="./npg_include/npgmain.js"></script>
+  <script src="../lib/randomforest.js"></script>
+  <script type="text/javascript">
+    /*
+    This demo includes npg library (notpygamejs) that I wrote a while ago. It can
+    be found on my Github page (https://github.com/karpathy/notpygamejs). It's a 
+    quick and dirty canvas wrapper that has some helped functions I use often.
+    It's main use is to contain a main loop and expose methods update(), draw(), 
+    as well as some events keyUp(), mouseClick() etc.
+    */
+
+    var N = 10; //number of data points
+    var data = new Array(N);
+    var labels = new Array(N);
+    var tree = new forestjs.RandomForest();
+    var dirty = true;
+    var ss = 50.0; // scaling factor for drawing
+    var density = 10; // density of drawing. Decrease for higher resolution (but slower)
+    var avgerr = 0;
+    var drawSoft = true;
+    var options = {};
+    options.type = 1;
+
+    function myinit() {
+
+      data[0] = [-0.4326, 1.1909];
+      data[1] = [1.5, 3.0];
+      data[2] = [0.1253, -0.0376];
+      data[3] = [0.2877, 0.3273];
+      data[4] = [-1.1465, 0.1746];
+      data[5] = [1.8133, 2.1139];
+      data[6] = [2.7258, 3.0668];
+      data[7] = [1.4117, 2.0593];
+      data[8] = [4.1832, 1.9044];
+      data[9] = [1.8636, 1.1677];
+
+      labels[0] = 1;
+      labels[1] = 1;
+      labels[2] = 1;
+      labels[3] = 1;
+      labels[4] = 1;
+      labels[5] = -1;
+      labels[6] = -1;
+      labels[7] = -1;
+      labels[8] = -1;
+      labels[9] = -1;
+
+      data[10] = [-0.5, -0.5];
+      labels[10] = -1;
+      data[11] = [1.0, 2.0];
+      labels[11] = 1;
+      data[12] = [1.0, -1.0];
+      labels[12] = 1;
+
+      N = data.length;
+
+      retrain();
+    }
+
+    function retrain() {
+      tree.train(data, labels, options);
+      dirty = true;
+    }
+
+    function update() {}
+
+    function draw() {
+      if (!dirty) return;
+
+      ctx.clearRect(0, 0, WIDTH, HEIGHT);
+
+      // draw decisions in the grid
+      for (var x = 0.0; x <= WIDTH; x += density) {
+        for (var y = 0.0; y <= HEIGHT; y += density) {
+
+          var dec = tree.predictOne([(x - WIDTH / 2) / ss, (y - HEIGHT / 2) / ss]);
+
+          if (!drawSoft) {
+            if (dec > 0.5) ctx.fillStyle = 'rgb(150,250,150)';
+            else ctx.fillStyle = 'rgb(250,150,150)';
+          } else {
+            var ri = 250 * (1 - dec) + 150 * dec;
+            var gi = 250 * dec + 150 * (1 - dec);
+            ctx.fillStyle = 'rgb(' + Math.floor(ri) + ',' + Math.floor(gi) + ',150)';
+          }
+
+          ctx.fillRect(x - density / 2 - 1, y - density - 1, density + 2, density + 2);
+        }
+      }
+
+      // draw axes
+      ctx.beginPath();
+      ctx.strokeStyle = 'rgb(50,50,50)';
+      ctx.lineWidth = 1;
+      ctx.moveTo(0, HEIGHT / 2);
+      ctx.lineTo(WIDTH, HEIGHT / 2);
+      ctx.moveTo(WIDTH / 2, 0);
+      ctx.lineTo(WIDTH / 2, HEIGHT);
+      ctx.stroke();
+
+      // draw datapoints.
+      ctx.strokeStyle = 'rgb(0,0,0)';
+      for (var i = 0; i < N; i++) {
+        if (labels[i] == 1) ctx.fillStyle = 'rgb(100,200,100)';
+        else ctx.fillStyle = 'rgb(200,100,100)';
+        drawCircle(data[i][0] * ss + WIDTH / 2, data[i][1] * ss + HEIGHT / 2, 5);
+      }
+
+      ctx.fillStyle = 'rgb(0,0,0)';
+      //ctx.fillText("Average error: " + avgerr.toPrecision(4), 10, HEIGHT-30); 
+      dirty = false;
+    }
+
+    function mouseClick(x, y, shiftPressed) {
+
+      // add datapoint at location of click
+      data[N] = [(x - WIDTH / 2) / ss, (y - HEIGHT / 2) / ss];
+      labels[N] = shiftPressed ? 1 : -1;
+      N += 1;
+
+      retrain();
+    }
+
+    function keyUp(key) {
+
+      if (key == 82) { // 'r'
+        retrain();
+      }
+
+    }
+
+    function keyDown(key) {}
+
+    // UI stuff
+    function refreshTrees(event, ui) {
+      var numTrees = Math.floor(ui.value);
+      $("#treesreport").text("Number of Trees = " + numTrees);
+      options.numTrees = numTrees;
+      retrain();
+    }
+
+    function refreshDepth(event, ui) {
+      var maxDepth = Math.floor(ui.value);
+      $("#depthreport").text("Max Depth = " + maxDepth);
+      options.maxDepth = maxDepth;
+      retrain();
+    }
+
+    function refreshTries(event, ui) {
+      var tries = Math.floor(ui.value);
+      $("#triesreport").text("Hypotheses per Node = " + tries);
+      options.numTries = tries;
+      retrain();
+    }
+
+    $(function() {
+      $("#slider1").slider({
+        orientation: "horizontal",
+        slide: refreshTrees,
+        max: 200,
+        min: 1,
+        step: 1,
+        value: 100
+      });
+
+      $("#slider2").slider({
+        orientation: "horizontal",
+        slide: refreshDepth,
+        max: 12,
+        min: 2,
+        step: 1,
+        value: 4
+      });
+
+      $("#slider3").slider({
+        orientation: "horizontal",
+        slide: refreshTries,
+        max: 50,
+        min: 1,
+        step: 1,
+        value: 10
+      });
+
+    });
+    /*setTimeout(function(){
+      $(".drawSoft").trigger('click');
+    },1000);*/
+  </script>
+
+  <style type="text/css">
+    canvas {
+      border: 1px solid #555;
+      margin-top: 10px;
+    }
+    body {
+      background-color: #32383f;
+      color: #fff;
+      text-align: center;
+      font-family: 'Roboto', Helvetica, sans-serif;
+      /*font-size: 12px;*/
+      padding: 0;
+      margin: 0;
+    }
+    
+    h1 {
+      font-size: 16px;
+    }
+    
+    h4 {
+      margin-top: 5px;
+      margin-bottom: 5px;
+    }
+    
+    hr {
+      border: 0;
+      border-bottom: solid 1px #434b55;
+      margin-bottom: 30px;
+    }
+    
+    p {
+      margin: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+      line-height: 160%;
+    }
+    
+    .instructions {
+      line-height: 250%;
+    }
+    
+    .sliderWrap {
+      max-width: 80%;
+      margin: 0 auto;
+      padding-bottom: 5px;
+    }
+
+    .ui-slider.ui-widget.ui-widget-content {
+      /*margin-top: 30px;*/
+    }
+    
+    #dec {
+      width: 100%;
+      height: 100px;
+      background-color: #F5FAFF;
+      border-bottom: 1px solid #E5EAEF;
+      margin-bottom: 20px;
+    }
+    
+    #optsdiv {
+      /*max-width: 100%;*/
+      max-width: 400px;
+      margin-top: 15px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .ui-widget-content {
+      max-width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.4);
+      border: none;
+      border-radius: 200px;
+    }
+    
+    .ui-state-default,
+    .ui-widget-content .ui-state-default,
+    .ui-widget-header .ui-state-default {
+      background: none;
+      background-color: #fff;
+      border: solid 1px transparent;
+      border-radius: 200px;
+      cursor: pointer;
+      transition: background 0.15s ease-in-out;
+    }
+    
+    .ui-widget-content .ui-state-hover {
+      background-color: rgba(255, 255, 255, 0.8);
+    }
+    
+    .ui-widget-content .ui-state-active {
+      transition: none;
+      background-color: #ccc;
+    }
+    
+    .ui-widget-content .ui-state-focus {
+      outline: none;
+    }
+
+    .sliderWrap.three {
+      display: none;
+    }
+
+    .drawSoft {
+      display: none;
+    }
+  </style>
+
+</head>
+
+<body onLoad="NPGinit(10); $('.drawSoft').trigger('click');">
+
+  <canvas id="NPGcanvas" width="350" height="350">Browser not supported for Canvas. Get a real browser.</canvas><br /><br />
+  <p class="instructions">
+    <b>Click</b> to add a <span style="color:rgb(255, 81, 111);">red</span> data point<br />
+    <b>Shift + Click</b> to add <span style="color: rgb(108, 255, 112);">green</span> data point<br />
+    <b>R</b> to retrain the model<br />
+  </p>
+  <div id="optsdiv">
+    <div class="sliderWrap">
+      <hr>
+      <div id="slider1"></div>
+      <br/>
+      <h4 id="treesreport">Number of Trees = 100</h4>
+      <p>Set this higher for smoother and more regularized final prediction. Higher is always better, but slower.</p>
+      <br/>
+    </div>
+    <div class="sliderWrap">
+      <hr>
+      <div id="slider2"></div>
+      <br/>
+      <h4 id="depthreport">Max Depth = 4</h4>
+      <p>Depth of each tree in the forest. Set this higher when more complicated decision boundaries are needed (but runs exponentially slower and can be more prone to overfitting if there are not enough trees). Usually if you can afford many trees and resources you want to set this higher.</p>
+      <button class="drawSoft" type="button" onclick="drawSoft= !drawSoft; dirty= true;">Toggle drawing: hard or soft assignment.</button>
+    </div>
+    <div class="sliderWrap three">
+      <hr>
+      <div id="slider3"></div>
+      <br/>
+      <h4 id="triesreport">Hypotheses per Node = 10</h4>
+      <p>Number of random hypotheses considered at each node during training. Setting this too high puts you in danger of overfitting your data because nodes in the forest lose variety.</p>
+    </div>
+
+  </div>
+
+</body>
+
+</html>
